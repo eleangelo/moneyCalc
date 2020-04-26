@@ -1,5 +1,5 @@
 
-const generateID = () => `ID${Math.round(Math.random()*1e8).toString(16)}`;
+const generateID = () => `gloID${Math.round(Math.random()*1e8).toString(16)}`;
 
 
 const totalBalance = document.querySelector('.total__balance'),
@@ -12,38 +12,45 @@ const totalBalance = document.querySelector('.total__balance'),
       
 
       let dataBaseOperation = [
-          {
-              id:'riutri',
-              description: 'Получила зарплату',
-              amount: 30000,
+        //   Удаляем отсюда
+        //   {
+        //       id:'riutri',
+        //       description: 'Получила зарплату',
+        //       amount: 30000,
 
-          },
-          {
-              id:'hfjsgh',
-              description: 'Квартплата',
-              amount: -3830,
+        //   },
+        //   {
+        //       id:'hfjsgh',
+        //       description: 'Квартплата',
+        //       amount: -3830,
 
-          },
-          {
-              id:'hgdjg',
-              description: 'Продукты',
-              amount: -2700,
+        //   },
+        //   {
+        //       id:'hgdjg',
+        //       description: 'Продукты',
+        //       amount: -2700,
 
-          },
-          {
-              id:'dhghd',
-              description: 'Получила премию',
-              amount: 8000,
+        //   },
+        //   {
+        //       id:'dhghd',
+        //       description: 'Получила премию',
+        //       amount: 8000,
 
-          },
-          {
-              id:'fsahf',
-              description: 'Кафе',
-              amount: -3000,
+        //   },
+        //   {
+        //       id:'fsahf',
+        //       description: 'Кафе',
+        //       amount: -3000,
 
-          },
+        //   },
           
         ];
+
+        
+
+        if(localStorage.getItem('calc')) {
+            dataBaseOperation = JSON.parse(localStorage.getItem('calc'));
+        }
 
         const renderOperation = (operation) => {
 
@@ -58,7 +65,7 @@ const totalBalance = document.querySelector('.total__balance'),
 
             listItem.innerHTML = `${operation.description}
                 <span class="history__money">${operation.amount} ₽</span>
-                <button class="history_delete">x</button>
+                <button class="history_delete" data-id="${operation.id}">x</button>
             `;
 
             historyList.append(listItem);
@@ -95,7 +102,6 @@ const totalBalance = document.querySelector('.total__balance'),
                         description: operationNameValue,
                         amount: +operationAmountValue,
                        
-
                     };
 
                 dataBaseOperation.push(operation);
@@ -111,13 +117,23 @@ const totalBalance = document.querySelector('.total__balance'),
                  operationAmount.value = '';
 
         };
+
+        // Удаляет операции с пощью делегирования
         const deleteOperation = (event) => {
-            console.log(event.target);
-        };
+            const target = event.target;
+            if (target.classList.contains('history_delete')) {
+            dataBaseOperation = dataBaseOperation.filter(operation => operation.id !== target.dataset.id);
+
+            init();
+            }
+
+                
+        
+    };
 
         const init = () => {
             historyList.textContent = '';
-            
+    
             // описание метода - запускает ф-ию внутри себя столько раз, сколько элементов в массиве.
             //  ф-я без имени
             dataBaseOperation.forEach(renderOperation);
@@ -128,6 +144,7 @@ const totalBalance = document.querySelector('.total__balance'),
             // }
 
             updateBalance();
+            localStorage.setItem('calc', JSON.stringify(dataBaseOperation));
         };
 
         form.addEventListener('submit', addOperation);
